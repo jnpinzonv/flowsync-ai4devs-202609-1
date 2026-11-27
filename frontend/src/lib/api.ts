@@ -87,7 +87,11 @@ async function request<T>(
   }
 
   // Successful payloads are wrapped in `{ data }`, except logout's `{ message }`.
-  if (json && typeof json === 'object' && 'data' in json) return json.data as T
+  if (!json || typeof json !== 'object') {
+    // e.g. VITE_API_URL pointing at something that answers 200 with HTML.
+    throw new ApiError(response.status, [])
+  }
+  if ('data' in json) return json.data as T
   return json as T
 }
 

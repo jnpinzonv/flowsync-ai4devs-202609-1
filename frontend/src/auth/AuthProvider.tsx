@@ -14,13 +14,22 @@ function readStoredToken() {
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [token, setTokenState] = useState<string | null>(readStoredToken)
 
+  // Storage can throw (blocked, quota); the in-memory session must still update.
   const setToken = useCallback((next: string) => {
-    localStorage.setItem(STORAGE_KEY, next)
+    try {
+      localStorage.setItem(STORAGE_KEY, next)
+    } catch {
+      // Session lasts until reload.
+    }
     setTokenState(next)
   }, [])
 
   const clearToken = useCallback(() => {
-    localStorage.removeItem(STORAGE_KEY)
+    try {
+      localStorage.removeItem(STORAGE_KEY)
+    } catch {
+      // Nothing persisted to remove.
+    }
     setTokenState(null)
   }, [])
 

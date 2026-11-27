@@ -27,7 +27,12 @@ export function LoginPage() {
       setToken(token)
       navigate('/profile', { replace: true })
     } catch (error) {
-      setErrors(toFormErrors(error, { 400: 'Email o contraseña incorrectos.' }))
+      setErrors(
+        toFormErrors(error, {
+          statusMessages: { 400: 'Email o contraseña incorrectos.' },
+          visibleFields: ['email', 'password'],
+        }),
+      )
       setSubmitting(false)
     }
   }
@@ -84,7 +89,10 @@ export function LoginPage() {
           />
           <FieldError id="password-error" message={errors.fields.password} />
         </div>
-        <Button type="submit" disabled={submitting || !email || !password}>
+        <Button
+          type="submit"
+          disabled={submitting || !email.trim() || !password.trim()}
+        >
           {submitting ? 'Entrando…' : 'Entrar'}
         </Button>
       </form>

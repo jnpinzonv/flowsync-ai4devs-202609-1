@@ -21,9 +21,11 @@ function validate({ email, password, passwordConfirmation }: Values) {
   const fields: Record<string, string> = {}
   if (!EMAIL_PATTERN.test(email) || email.length > 254)
     fields.email = 'Introduce un email válido.'
-  if (password.length < PASSWORD_MIN) {
-    fields.password = `La contraseña debe tener al menos ${PASSWORD_MIN} caracteres.`
-  } else if (password.length > PASSWORD_MAX) {
+  // The backend trims the password before checking its length, so do the same.
+  const length = password.trim().length
+  if (length < PASSWORD_MIN) {
+    fields.password = `La contraseña debe tener al menos ${PASSWORD_MIN} caracteres (sin contar espacios al inicio o al final).`
+  } else if (length > PASSWORD_MAX) {
     fields.password = `La contraseña no puede tener más de ${PASSWORD_MAX} caracteres.`
   }
   if (passwordConfirmation !== password) {
@@ -65,7 +67,11 @@ export function SignupPage() {
       setToken(token)
       navigate('/profile', { replace: true })
     } catch (error) {
-      setErrors(toFormErrors(error))
+      setErrors(
+        toFormErrors(error, {
+          visibleFields: ['email', 'password', 'passwordConfirmation'],
+        }),
+      )
       setSubmitting(false)
     }
   }
