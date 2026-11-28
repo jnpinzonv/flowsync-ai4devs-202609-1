@@ -1,0 +1,2 @@
+# Recetas de make: con CRLF, el shell de WSL/Linux recibe un retorno de carro al final de cada comando.
+Makefile text eol=lf
